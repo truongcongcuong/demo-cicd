@@ -32,7 +32,7 @@ jobs:
             ls -la
             docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
             docker images
-            docker push -t truongcongcuong/test-cicd-1 .
+            docker push truongcongcuong/test-cicd-1 .
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
