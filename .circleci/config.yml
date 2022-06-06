@@ -6,6 +6,20 @@ orbs:
   docker: circleci/docker@2.0.1
 
 jobs:
+  test:
+    docker:
+      - image: adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
+    steps:
+      - checkout
+      - run:
+          name: set up mvn command
+          command: |
+            pwd
+            ls
+            chmod +x mvnw
+            sed -i "s/\r$//" mvnw
+            ./mvnw --version
+            ./mvnw package
   build-and-push:
     environment:
       DOCKER_IMAGE: truongconguong/test-cicd-1
