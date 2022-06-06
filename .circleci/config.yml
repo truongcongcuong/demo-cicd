@@ -1,54 +1,38 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
-orbs:
-  docker: circleci/docker@2.0.1
+#
+#orbs:
+#  docker: circleci/docker@2.0.1
 
 jobs:
-  test:
-    docker:
-      - image: adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
-    steps:
-      - checkout
-      - run:
-          name: set up mvn command
-          command: |
-            pwd
-            ls
-            chmod +x mvnw
-            sed -i "s/\r$//" mvnw
-            ./mvnw --version
-            ./mvnw package
   build-and-push:
     environment:
-      DOCKER_IMAGE: truongconguong/test-cicd-1
+      DOCKER_IMAGE: truongcongcuong/test-cicd-1
       DOCKER_TAG: latest
-    executor: docker/docker
+    docker:
+      - image: cimg/openjdk:11.0.13
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check:
-          docker-username: DOCKER_LOGIN
-          docker-password: DOCKER_PASSWORD
-      - docker/build:
-          image: $DOCKER_IMAGE
-          tag: $DOCKER_TAG
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: $DOCKER_IMAGE
-          tag: $DOCKER_TAG
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
+          name: run build
           command: |
-            echo "Digest is: $(</tmp/digest.txt)"
-#  deploy:
-#    executor: docker/docker
-#    steps:
-#      - add_ssh_keys:
-#          fingerprints:
-#            - $FINGER_PRINT
-#      - run: ssh -oStrictHostKeyChecking=no -v ec2-user@$HOST_SERVER './deploy.sh'
-
+            whoami
+            pwd
+            chmod +x mvnw
+            sed -i "s/\r$//" mvnw
+            ./mvnw package
+            ls
+      - run:
+          name: build
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+            ls -la
+            docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
+            docker images
+            docker push -t truongcongcuong/test-cicd-1 .
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
