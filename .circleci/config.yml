@@ -54,10 +54,10 @@ workflows:
             branches:
               only:
                 - master
-#      - deploy:
-#          requires:
-#            - build-and-push
-#          filters:
-#            branches:
-#              only:
-#                - ci
+      - deploy:
+          requires:
+            - build-and-push
+          filters:
+            branches:
+              only:
+                - master
